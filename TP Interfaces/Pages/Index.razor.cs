@@ -4,6 +4,8 @@ using System.Reflection;
 using Microsoft.AspNetCore.Components;
 using TP_Interfaces.Data;
 using Microsoft.JSInterop;
+using System.Globalization;
+using System.Speech.Recognition;
 
 namespace TP_Interfaces.Pages;
 
@@ -14,11 +16,17 @@ public partial class Index : ComponentBase
     SerialPort port = new SerialPort("COM4", 9600);
     private float percentage = 0;
     private int maxConnectRetries = 20;
+    private bool reintentar = false;
     bool isIngredient1Served = false, isIngredient2Served = false;
+
+    SpeechRecognitionEngine talk = new SpeechRecognitionEngine(new CultureInfo("es-ES"));
+    private static List<String> Fernet = new() { "fernet", "con", "coca", "carnet", "cock", "cern" };
+    private static List<String> Gin = new() { "gin", "and", "tonic", "china", "China", "Tony", "tónica", "sonic", "Chile", "Antoni", "Antonio", "Anthony", "siendo", "quien" };
+    private static List<String> Vodka = new() { "vodka", "des", "de" };
 
     Bebida FernetConCoca, Destornillador, GinTonic, selectedBeverage;
 
-    enum Step { ConnectingToPort, SelectingBeverage, DevicePositioning, ServingBeverage, Finished }
+    enum Step { ConnectingToPort,Recording, SelectingBeverage, DevicePositioning, ServingBeverage, Finished }
     Step currentStep = Step.ConnectingToPort;
 
     protected override void OnInitialized()
@@ -26,11 +34,34 @@ public partial class Index : ComponentBase
         port.RtsEnable = true;
         port.DtrEnable = true;
 
+        talk.SetInputToDefaultAudioDevice();
+        Grammar grammar = new DictationGrammar();
+        talk.LoadGrammar(grammar);
+        talk.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(talk_SpeechRecognized);
+
         FernetConCoca = Bebida.FernetConCoca();
         Destornillador = Bebida.Destornillador();
         GinTonic = Bebida.GinAndTonic();
     }
-
+    private void talk_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+    {
+        string text = e.Result.Text;
+        //test = e.Result.Text;
+        if (isLibreria(text, Fernet))
+            SelectBeverage(FernetConCoca);
+        else if (isLibreria(text, Gin))
+            SelectBeverage(GinTonic);
+        else if (isLibreria(text, Vodka))
+            SelectBeverage(Destornillador);
+        else {
+            reintentar = true;
+        }
+        StateHasChanged();
+    }
+    private bool isLibreria(string value, List<String> list)
+    {
+        return list.Any(x => value.Contains(x));
+    }
     private async Task OpenPort()
     {
         while (maxConnectRetries > 0) 
@@ -56,7 +87,13 @@ public partial class Index : ComponentBase
         maxConnectRetries = 20;
     }
 
-    private void TestingGabi()=> currentStep = Step.SelectingBeverage;
+    private void Record()
+    {
+        currentStep = Step.Recording;
+        StateHasChanged();
+        talk.Recognize(TimeSpan.FromSeconds(5));
+
+    }
 
     private void SelectBeverage(Bebida beverage)
     {

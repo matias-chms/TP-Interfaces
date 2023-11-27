@@ -12,9 +12,25 @@
             </BodyContent>
             <FooterContent>
                 <MudButton OnClick="OpenPort" Variant="Variant.Filled" Color="Color.Primary" FullWidth>Enlazar</MudButton>
-                <MudButton OnClick="TestingGabi" Variant="Variant.Filled" Color="Color.Error" FullWidth>Testing Gabi</MudButton>
+                <MudButton OnClick="Record" Variant="Variant.Filled" Color="Color.Error" FullWidth>Testing Gabi</MudButton>
             </FooterContent>
         </MobilePage>
+    }
+    else if (currentStep == Step.Recording)
+    { 
+      <MobilePage SpacedAround="true" Class="fade-in-step" Style="height: 100%;">
+         <BodyContent>
+                <MudText Typo="Typo.h1" Align="Align.Center">Elija su bebida</MudText>
+                <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary">Lo estamos escuchando</MudText>
+                @*Aca estaria bueno poner un contador de 5 > 0, no se hacerlo visual *@
+            </BodyContent>
+         <FooterContent>
+             @if(reintentar)
+             {
+                <MudButton  OnClick="Record" Variant="Variant.Filled" Color="Color.Error" FullWidth>Reintentar</MudButton>
+             }
+         </FooterContent>
+      </MobilePage>
     }
     else if (currentStep == Step.SelectingBeverage)
     {
