@@ -1,0 +1,145 @@
+﻿@page "/"
+@using TP_Interfaces.Components;
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="height: 100%;">
+    @if (currentStep == Step.ConnectingToPort)
+    {
+        <MobilePage SpacedAround="true" Class="fade-in-step" Style="height: 100%;">
+            <BodyContent>
+                <MudText Typo="Typo.h1" Align="Align.Center">Conectate al dispositivo</MudText>
+                <MudIcon Class="align-self-center" Style="transform: scale(6)" Icon="@Icons.Material.Filled.Cable" Color="Color.Secondary" />
+                <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary">Conectá por USB al dispositivo y toca el botón <strong>Enlazar</strong></MudText>
+            </BodyContent>
+            <FooterContent>
+                <MudButton OnClick="OpenPort" Variant="Variant.Filled" Color="Color.Primary" FullWidth>Enlazar</MudButton>
+                <MudButton OnClick="TestingGabi" Variant="Variant.Filled" Color="Color.Error" FullWidth>Testing Gabi</MudButton>
+            </FooterContent>
+        </MobilePage>
+    }
+    else if (currentStep == Step.SelectingBeverage)
+    {
+        <MobilePage SpacedAround="true" Class="fade-in-step" Style="height: 100%;">
+            <BodyContent>
+                <div>
+                    <MudText Typo="Typo.h1" Align="Align.Center">Carta de bebidas</MudText>
+                    <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary">Usá <strong>tu voz</strong> para seleccionar la bebida</MudText>
+                </div>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudPaper Class="d-flex" Height="152px">
+                            <img style="height: 100%" src="images/FernetConCoca.jpg" alt="Fernet con Coca" />
+                            <div class="d-flex flex-column pa-2">
+                                <MudText Typo="Typo.h3" Align="Align.Center">@FernetConCoca.Name</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">@FernetConCoca.Description</MudText>
+                                <MudSpacer />
+                                <MudButton Class="align-self-end" OnClick="()=>SelectBeverage(FernetConCoca)" Variant="Variant.Text" Color="Color.Primary">Servir</MudButton>
+                            </div>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudPaper Class="d-flex" Height="152px">
+                            <img style="height: 100%" src="images/Destornillador.jpg" alt="Destornillador" />
+                            <div class="d-flex flex-column pa-2">
+                                <MudText Typo="Typo.h3" Align="Align.Center">@Destornillador.Name</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">@Destornillador.Description</MudText>
+                                <MudSpacer />
+                                <MudButton Class="align-self-end" OnClick="()=>SelectBeverage(Destornillador)" Variant="Variant.Text" Color="Color.Primary">Servir</MudButton>
+                            </div>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudPaper Class="d-flex" Height="152px">
+                            <img style="height: 100%" src="images/GinAndTonic.jpg" alt="Gin and Tonic" />
+                            <div class="d-flex flex-column pa-2">
+                                <MudText Typo="Typo.h3" Align="Align.Center">@GinTonic.Name</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">@GinTonic.Description</MudText>
+                                <MudSpacer />
+                                <MudButton Class="align-self-end" OnClick="()=>SelectBeverage(GinTonic)" Variant="Variant.Text" Color="Color.Primary">Servir</MudButton>
+                            </div>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+
+                
+            </BodyContent>
+        </MobilePage>
+    }
+    else if (currentStep == Step.DevicePositioning)
+    {
+        <MobilePage SpacedAround="true" Class="fade-in-step" Style="height: 100%;">
+            <BodyContent>
+                <MudText Typo="Typo.h1" Align="Align.Center">Sirviendo @selectedBeverage.Name</MudText>
+                <MudIcon Class="align-self-center" Style="transform: scale(6) rotate(180deg);" Icon="@Icons.Material.Filled.SettingsRemote" Color="Color.Secondary" />
+                <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary">Poné el medidor encima del vaso y tocá el botón <strong>Iniciar</strong></MudText>
+            </BodyContent>
+            <FooterContent>
+                <MudButton OnClick="ReadPort" Variant="Variant.Filled" Color="Color.Primary" FullWidth>Iniciar</MudButton>
+            </FooterContent>
+        </MobilePage>
+    }
+    else if (currentStep == Step.ServingBeverage)
+    {
+        <MobilePage SpacedAround="true" Class="fade-in-step" Style="height: 100%;">
+            <BodyContent>
+                <MudText Typo="Typo.h1" Align="Align.Center">Sirviendo @selectedBeverage.Name</MudText>
+
+                @switch (selectedBeverage.Name)
+                {
+                    case "Fernet con Coca":
+                        <img class="rounded-image align-self-center" height="200" src="images/FernetConCoca.jpg" alt="Fernet con Coca" />
+                        break;
+                    case "Destornillador":
+                        <img class="rounded-image align-self-center" height="200" src="images/Destornillador.jpg" alt="Destornillador" />
+                        break;
+                    default:
+                        <img class="rounded-image align-self-center" height="200" src="images/GinAndTonic.jpg" alt="Gin and Tonic" />
+                        break;
+                }
+                
+                <div>
+                    <MudText Typo="Typo.h2" Align="Align.Center">Ingrediente @(isIngredient1Served ? $"2: {selectedBeverage.Ingredientes[1].Name}" : $"1: {selectedBeverage.Ingredientes[0].Name}")</MudText>
+                    <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary">Serví lentamente hasta que <strong>vibre tu celular</strong></MudText>
+                </div>
+            </BodyContent>
+        </MobilePage>
+        <MudText Typo="Typo.h2" Color="Color.Error" Style="position: fixed; left: 16px; bottom: 16px;">@percentage</MudText>
+    }
+    else if (currentStep == Step.Finished)
+    {
+        <MobilePage SpacedAround="true" Class="fade-in-step" Style="height: 100%;">
+            <BodyContent>
+                <div>
+                    <MudText Typo="Typo.h1" Align="Align.Center">Bebida servida</MudText>
+                    <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary">Disfruta tu <strong>@selectedBeverage.Name</strong></MudText>
+                </div>
+
+                <MudIcon Class="align-self-center mb-10" Style="transform: scale(6);" Icon="@Icons.Material.Filled.Done" Color="Color.Success" />
+            </BodyContent>
+            @*<FooterContent>
+                <MudButton OnClick="Refresh" Variant="Variant.Filled" Color="Color.Primary" FullWidth>Servir nuevamente</MudButton>
+            </FooterContent>*@
+        </MobilePage>
+    }
+</MudContainer>
+
+<style>
+    .fade-in-step {
+        animation: fadeIn 2s;
+    }
+
+    .rounded-image {
+        border-radius: 50%;
+    }
+
+    @@keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+
+</style>

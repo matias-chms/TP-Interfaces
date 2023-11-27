@@ -1,0 +1,42 @@
+﻿<div class="@Class" style="@Style">
+    <div class="body-content">
+        @BodyContent
+    </div>
+    <div class="footer-content">
+        @FooterContent
+    </div>
+</div>
+
+<style>
+    .body-content {
+        height: 100%;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: @(SpacedAround ? "space-around" : "center");
+    }
+
+    .footer-content {
+        position: fixed;
+        bottom: 16px;
+        left: 16px;
+        right: 16px;
+        display: flex !important;
+        gap: 12px;
+    }
+
+    
+</style>
+
+@code {
+    [Parameter]
+    public RenderFragment BodyContent { get; set; }
+    [Parameter]
+    public RenderFragment FooterContent { get; set; }
+    [Parameter]
+    public bool SpacedAround { get; set; } = false;
+    [Parameter]
+    public string Class { get; set; } = string.Empty;
+    [Parameter]
+    public string Style { get; set; } = string.Empty;
+}

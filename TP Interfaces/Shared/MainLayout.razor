@@ -1,0 +1,83 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>Medidor de Bebidas</PageTitle>
+
+<MudThemeProvider Theme="MainTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudLayout>
+    <MudAppBar Class="white" Color="Color.Transparent" Elevation="0">
+        <MudSpacer />
+        <MudIcon Color="Color.Primary" Style="transform: rotate(180deg);" Icon="@Icons.Material.Filled.SettingsRemote" />
+        <MudText Color="Color.Primary" Typo="Typo.h5" Class="ml-3">Medidor de Bebidas</MudText>
+        <MudSpacer />
+    </MudAppBar>
+    <MudMainContent Style="height: 100svh;">
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code{
+    public static MudTheme MainTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+                Primary = "016CFF",
+                PrimaryContrastText = "FFFFFF",
+            Secondary = "757575",
+            //SecondaryContrastText = "D62C24",
+            //Tertiary = "0069FF",
+            //TertiaryContrastText = "999999",
+            Background = "FFFFFF",
+            BackgroundGrey = "FAFAFA",
+        },
+        Typography = new Typography()
+        {
+            H1 = new H1()
+            {
+                FontSize = "1.8rem",
+                FontWeight = 600,
+                LineHeight = 1.35,
+            },
+            H2 = new H2()
+            {
+                FontSize = "1.5rem",
+                FontWeight = 600,
+                LineHeight = 1.6,
+            },
+            H3 = new H3()
+            {
+                FontSize = "1.125rem",
+                FontWeight = 500,
+                LineHeight = 1.6,
+            },
+            Body1 = new Body1()
+            {
+                FontSize = "1rem",
+                FontWeight = 400,
+            },
+            Body2 = new Body2()
+            {
+                FontSize = "0.875rem",
+                FontWeight = 400,
+            },
+            Overline = new Overline()
+            {
+                FontSize = "0.875rem",
+                FontWeight = 800,
+                LineHeight = 1,
+                LetterSpacing = "0.00938em",
+                TextTransform = "none",
+
+            },
+            Button = new Button()
+            {
+                FontSize = "1rem",
+                FontWeight = 600,
+                LetterSpacing = "0.00938em",
+                TextTransform = "none",
+            },
+        }
+    };
+}
+

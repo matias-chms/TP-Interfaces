@@ -1,0 +1,15 @@
+﻿@using TP_Interfaces.Data;
+
+<MudPaper Class="d-flex flex-column align-center pa-2" Height="328px">
+    <img src="images/FernetConCoca.jpg" height="128" />
+    <MudText Typo="Typo.h2" Align="Align.Center">@Beverage.Name</MudText>
+    <MudText Typo="Typo.body2" Align="Align.Center">@Beverage.Description</MudText>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public Bebida Beverage { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+}
