@@ -6,28 +6,32 @@ using TP_Interfaces.Data;
 using Microsoft.JSInterop;
 using System.Globalization;
 using System.Speech.Recognition;
+using MudBlazor;
 
 namespace TP_Interfaces.Pages;
 
 public partial class Index : ComponentBase
 {
     [Inject] private IJSRuntime JSRuntime { get; set; }
+    [Inject] private ISnackbar Snackbar { get; set; } 
 
     SerialPort port = new SerialPort("COM4", 9600);
     private float percentage = 0;
     private int maxConnectRetries = 20;
-    private bool reintentar = false;
-    bool isIngredient1Served = false, isIngredient2Served = false;
+    private bool isIngredient1Served = false, isIngredient2Served = false;
 
     SpeechRecognitionEngine talk = new SpeechRecognitionEngine(new CultureInfo("es-ES"));
-    private static List<String> Fernet = new() { "fernet", "con", "coca", "carnet", "cock", "cern" };
-    private static List<String> Gin = new() { "gin", "and", "tonic", "china", "China", "Tony", "tónica", "sonic", "Chile", "Antoni", "Antonio", "Anthony", "siendo", "quien" };
-    private static List<String> Vodka = new() { "vodka", "des", "de" };
+    private static List<String> FernetWords = new() { "fernet", "con", "coca", "carnet", "cock", "cern", "sede", "gobierno", "a un" };
+    private static List<String> GinTonicWords = new() { "gin", "and", "tonic", "china", "China", "Tony", "tónica", "sonic", "chile", "antoni", "antonio", "anthony", "siendo", "quien", "si", "el", "actor", "y" };
+    private static List<String> DestornilladorWords = new() { "vodka", "des", "de", "destornillador" };
 
     Bebida FernetConCoca, Destornillador, GinTonic, selectedBeverage;
 
-    enum Step { ConnectingToPort,Recording, SelectingBeverage, DevicePositioning, ServingBeverage, Finished }
+    enum Step { ConnectingToPort, SelectingBeverage, DevicePositioning, ServingBeverage, Finished }
     Step currentStep = Step.ConnectingToPort;
+
+    enum RecordingStep { Start, Listening, Detected, Error } 
+    RecordingStep recordingStep = RecordingStep.Start;
 
     protected override void OnInitialized()
     {
@@ -37,31 +41,46 @@ public partial class Index : ComponentBase
         talk.SetInputToDefaultAudioDevice();
         Grammar grammar = new DictationGrammar();
         talk.LoadGrammar(grammar);
-        talk.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(talk_SpeechRecognized);
+        talk.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(SpeechRecognized);
+        talk.SpeechHypothesized += new EventHandler<SpeechHypothesizedEventArgs>(SpeechHypothesized);
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        Snackbar.Configuration.VisibleStateDuration = 2000;
+        Snackbar.Configuration.RequireInteraction = false;
+        Snackbar.Configuration.ShowCloseIcon = false;
 
         FernetConCoca = Bebida.FernetConCoca();
         Destornillador = Bebida.Destornillador();
         GinTonic = Bebida.GinAndTonic();
     }
-    private void talk_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+    string text;
+    private void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
     {
-        string text = e.Result.Text;
-        //test = e.Result.Text;
-        if (isLibreria(text, Fernet))
+        text = e.Result.Text.ToLower();
+
+        if (CheckLibrary(text, FernetWords))
             SelectBeverage(FernetConCoca);
-        else if (isLibreria(text, Gin))
+        else if (CheckLibrary(text, GinTonicWords))
             SelectBeverage(GinTonic);
-        else if (isLibreria(text, Vodka))
+        else if (CheckLibrary(text, DestornilladorWords))
             SelectBeverage(Destornillador);
-        else {
-            reintentar = true;
+        else
+        {
+            recordingStep = RecordingStep.Error;
+            Snackbar.Clear();
+            Snackbar.Add("Error al grabar. Intentá de nuevo", Severity.Warning);
         }
+
         StateHasChanged();
     }
-    private bool isLibreria(string value, List<String> list)
+    private void SpeechHypothesized(object sender, SpeechHypothesizedEventArgs e)
     {
-        return list.Any(x => value.Contains(x));
+        recordingStep = RecordingStep.Detected; 
+        StateHasChanged();
     }
+
+    private bool CheckLibrary(string value, List<String> list) => list.Any(x => value.Contains(x));
+
     private async Task OpenPort()
     {
         while (maxConnectRetries > 0) 
@@ -87,12 +106,14 @@ public partial class Index : ComponentBase
         maxConnectRetries = 20;
     }
 
-    private void Record()
-    {
-        currentStep = Step.Recording;
-        StateHasChanged();
-        talk.Recognize(TimeSpan.FromSeconds(5));
+    private void GoToStep(Step step)=> currentStep = step;
 
+    private async Task Record()
+    {
+        recordingStep = RecordingStep.Listening;
+        await Task.Delay(1);
+        StateHasChanged();
+        talk.Recognize();
     }
 
     private void SelectBeverage(Bebida beverage)

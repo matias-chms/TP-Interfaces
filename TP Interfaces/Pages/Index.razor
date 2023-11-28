@@ -12,72 +12,68 @@
             </BodyContent>
             <FooterContent>
                 <MudButton OnClick="OpenPort" Variant="Variant.Filled" Color="Color.Primary" FullWidth>Enlazar</MudButton>
-                <MudButton OnClick="Record" Variant="Variant.Filled" Color="Color.Error" FullWidth>Testing Gabi</MudButton>
+                <MudButton OnClick="()=>GoToStep(Step.SelectingBeverage)" Variant="Variant.Filled" Color="Color.Error" FullWidth>Testing Gabi</MudButton>
             </FooterContent>
         </MobilePage>
     }
-    else if (currentStep == Step.Recording)
-    { 
-      <MobilePage SpacedAround="true" Class="fade-in-step" Style="height: 100%;">
-         <BodyContent>
-                <MudText Typo="Typo.h1" Align="Align.Center">Elija su bebida</MudText>
-                <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary">Lo estamos escuchando</MudText>
-                @*Aca estaria bueno poner un contador de 5 > 0, no se hacerlo visual *@
-            </BodyContent>
-         <FooterContent>
-             @if(reintentar)
-             {
-                <MudButton  OnClick="Record" Variant="Variant.Filled" Color="Color.Error" FullWidth>Reintentar</MudButton>
-             }
-         </FooterContent>
-      </MobilePage>
-    }
     else if (currentStep == Step.SelectingBeverage)
     {
-        <MobilePage SpacedAround="true" Class="fade-in-step" Style="height: 100%;">
+        <MobilePage SpacedAround="true" Class="fade-in-step pb-12" Style="height: 100%;">
             <BodyContent>
                 <div>
                     <MudText Typo="Typo.h1" Align="Align.Center">Carta de bebidas</MudText>
-                    <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary">Usá <strong>tu voz</strong> para seleccionar la bebida</MudText>
+                    @*<MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary">Usá <strong>tu voz</strong> para seleccionar la bebida</MudText>*@
                 </div>
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudPaper Class="d-flex" Height="152px">
+                        <MudPaper Class="d-flex" Height="120px">@*Height="152px"*@
                             <img style="height: 100%" src="images/FernetConCoca.jpg" alt="Fernet con Coca" />
                             <div class="d-flex flex-column pa-2">
                                 <MudText Typo="Typo.h3" Align="Align.Center">@FernetConCoca.Name</MudText>
                                 <MudText Typo="Typo.body2" Color="Color.Secondary">@FernetConCoca.Description</MudText>
-                                <MudSpacer />
-                                <MudButton Class="align-self-end" OnClick="()=>SelectBeverage(FernetConCoca)" Variant="Variant.Text" Color="Color.Primary">Servir</MudButton>
+                                @*<MudSpacer />
+                                <MudButton Class="align-self-end" OnClick="()=>SelectBeverage(FernetConCoca)" Variant="Variant.Text" Color="Color.Primary">Servir</MudButton>*@
                             </div>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="12">
-                        <MudPaper Class="d-flex" Height="152px">
+                        <MudPaper Class="d-flex" Height="120px">
                             <img style="height: 100%" src="images/Destornillador.jpg" alt="Destornillador" />
                             <div class="d-flex flex-column pa-2">
                                 <MudText Typo="Typo.h3" Align="Align.Center">@Destornillador.Name</MudText>
                                 <MudText Typo="Typo.body2" Color="Color.Secondary">@Destornillador.Description</MudText>
-                                <MudSpacer />
-                                <MudButton Class="align-self-end" OnClick="()=>SelectBeverage(Destornillador)" Variant="Variant.Text" Color="Color.Primary">Servir</MudButton>
+                                @*<MudSpacer />
+                                <MudButton Class="align-self-end" OnClick="()=>SelectBeverage(Destornillador)" Variant="Variant.Text" Color="Color.Primary">Servir</MudButton>*@
                             </div>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="12">
-                        <MudPaper Class="d-flex" Height="152px">
+                        <MudPaper Class="d-flex" Height="120px">
                             <img style="height: 100%" src="images/GinAndTonic.jpg" alt="Gin and Tonic" />
                             <div class="d-flex flex-column pa-2">
                                 <MudText Typo="Typo.h3" Align="Align.Center">@GinTonic.Name</MudText>
                                 <MudText Typo="Typo.body2" Color="Color.Secondary">@GinTonic.Description</MudText>
-                                <MudSpacer />
-                                <MudButton Class="align-self-end" OnClick="()=>SelectBeverage(GinTonic)" Variant="Variant.Text" Color="Color.Primary">Servir</MudButton>
+                                @*<MudSpacer />
+                                <MudButton Class="align-self-end" OnClick="()=>SelectBeverage(GinTonic)" Variant="Variant.Text" Color="Color.Primary">Servir</MudButton>*@
                             </div>
                         </MudPaper>
                     </MudItem>
                 </MudGrid>
-
-                
             </BodyContent>
+            <FooterContent>
+                @if (recordingStep == RecordingStep.Listening)
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.RecordVoiceOver" FullWidth>Escuchando</MudButton>
+                }
+                else if (recordingStep == RecordingStep.Detected)
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.RecordVoiceOver" FullWidth>Detectado audio</MudButton>
+                }
+                else
+                {
+                    <MudButton OnClick="Record" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.RecordVoiceOver" FullWidth>Elegir bebida</MudButton>
+                }
+            </FooterContent>
         </MobilePage>
     }
     else if (currentStep == Step.DevicePositioning)
@@ -145,6 +141,29 @@
 
     .rounded-image {
         border-radius: 50%;
+    }
+
+    .bar {
+        border: 2px solid var(--mud-palette-primary-lighten);
+        border-radius: var(--mud-default-borderradius);
+        height: 40px;
+        width: 100%;
+        background-color: var(--mud-palette-primary-hover);
+    }
+    .in {
+        animation: fill 5s linear 1;
+        height: 100%;
+        background-color: var(--mud-palette-primary);
+    }
+
+    @@keyframes fill {
+        0% {
+            width: 0%;
+        }
+
+        100% {
+            width: 100%;
+        }
     }
 
     @@keyframes fadeIn {
