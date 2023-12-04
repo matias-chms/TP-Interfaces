@@ -1,0 +1,54 @@
+const int echo=A1;
+const int trigger=A0;
+long time;
+float distance, percentageDistance;
+
+const float emptyDistance = 13.5, fullDistance = 5;
+
+void setup() 
+{
+  for(int pin=2;pin<=11;pin++)
+    pinMode(pin, OUTPUT);
+  
+  pinMode(echo, INPUT);
+  pinMode(trigger, OUTPUT);
+  Serial.begin(9600);
+  delay(100);
+}
+
+void loop() 
+{
+  measure();
+  calculatePercentage();
+  printWithComma(percentageDistance);
+  Serial.println();
+}
+
+void measure()
+{
+  digitalWrite(trigger, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigger, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigger, LOW);
+  
+  time = pulseIn(echo, HIGH);
+  distance = float(time * 0.0343) / 2;
+  delay(100);
+}
+
+void calculatePercentage()
+{
+  percentageDistance = ((distance - emptyDistance)/(fullDistance - emptyDistance)) * 100;
+}
+
+void printWithComma(float value)
+{
+  int ival = (int)value;
+  int frac = (value - ival) * 100;
+
+  Serial.print(ival);
+  Serial.print(",");
+  if (frac < 10) Serial.print("0");
+  Serial.print(frac);
+}
