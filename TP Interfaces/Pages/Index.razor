@@ -12,7 +12,7 @@
             </BodyContent>
             <FooterContent>
                 <MudButton OnClick="OpenPort" Variant="Variant.Filled" Color="Color.Primary" FullWidth>Enlazar</MudButton>
-                <MudButton OnClick="()=>GoToStep(Step.SelectingBeverage)" Variant="Variant.Filled" Color="Color.Error" FullWidth>Testing Gabi</MudButton>
+                @*<MudButton OnClick="()=>GoToStep(Step.SelectingBeverage)" Variant="Variant.Filled" Color="Color.Error" FullWidth>Testing Gabi</MudButton>*@
             </FooterContent>
         </MobilePage>
     }
@@ -114,7 +114,6 @@
                 </div>
             </BodyContent>
         </MobilePage>
-        <MudText Typo="Typo.h2" Color="Color.Error" Style="position: fixed; left: 16px; bottom: 16px;">@percentage</MudText>
     }
     else if (currentStep == Step.Finished)
     {
