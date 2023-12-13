@@ -2,6 +2,7 @@
 @using TP_Interfaces.Components;
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="height: 100%;">
+    @*<MudText Typo="Typo.h2" Color="Color.Error" Style="position: fixed; left: 16px; bottom: 80px;">@percentage % <br/> @iteration</MudText>*@
     @if (currentStep == Step.ConnectingToPort)
     {
         <MobilePage SpacedAround="true" Class="fade-in-step" Style="height: 100%;">
@@ -93,7 +94,14 @@
     {
         <MobilePage SpacedAround="true" Class="fade-in-step" Style="height: 100%;">
             <BodyContent>
-                <MudText Typo="Typo.h1" Align="Align.Center">Sirviendo @selectedBeverage.Name</MudText>
+                @if (iteration <= 200)
+                {
+                    <MudText Typo="Typo.h1" Align="Align.Center">Calibrando sensor</MudText>
+                }
+                else
+                {
+                    <MudText Class="fade-in-step" Typo="Typo.h1" Align="Align.Center">Sirviendo @selectedBeverage.Name</MudText>
+                }
 
                 @switch (selectedBeverage.Name)
                 {
@@ -107,11 +115,17 @@
                         <img class="rounded-image align-self-center" height="200" src="images/GinAndTonic.jpg" alt="Gin and Tonic" />
                         break;
                 }
-                
-                <div>
-                    <MudText Typo="Typo.h2" Align="Align.Center">Ingrediente @(isIngredient1Served ? $"2: {selectedBeverage.Ingredientes[1].Name}" : $"1: {selectedBeverage.Ingredientes[0].Name}")</MudText>
-                    <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary">Serví lentamente hasta que <strong>vibre tu celular</strong></MudText>
-                </div>
+                @if (iteration <= 200)
+                {
+                    <MudText Typo="Typo.h2" Align="Align.Center">@(iteration/2)%</MudText>
+                }
+                else
+                {
+                    <div class="fade-in-step">
+                        <MudText Typo="Typo.h2" Align="Align.Center">Ingrediente @(isIngredient1Served ? $"2: {selectedBeverage.Ingredientes[1].Name}" : $"1: {selectedBeverage.Ingredientes[0].Name}")</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary">Serví lentamente hasta que <strong>vibre tu celular</strong></MudText>
+                    </div>
+                }
             </BodyContent>
         </MobilePage>
     }

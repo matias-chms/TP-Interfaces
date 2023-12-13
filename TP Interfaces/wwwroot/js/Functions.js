@@ -1,3 +1,3 @@
 function Vibrate() {
-    navigator.vibrate([750]);
+    navigator.vibrate([1000]);
 }

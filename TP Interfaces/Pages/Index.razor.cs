@@ -15,7 +15,7 @@ public partial class Index : ComponentBase
     [Inject] private IJSRuntime JSRuntime { get; set; }
     [Inject] private ISnackbar Snackbar { get; set; } 
 
-    SerialPort port = new SerialPort("COM4", 9600);
+    SerialPort port = new SerialPort("COM3", 9600);
     private float percentage = 0;
     private int maxConnectRetries = 20;
     private bool isIngredient1Served = false, isIngredient2Served = false;
@@ -121,7 +121,7 @@ public partial class Index : ComponentBase
         selectedBeverage = beverage;
         currentStep = Step.DevicePositioning;
     }
-
+    int iteration = 0;
     private async Task ReadPort()
     {
         currentStep = Step.ServingBeverage;
@@ -129,29 +129,31 @@ public partial class Index : ComponentBase
         StateHasChanged();
         float[] measurements = new float[5];
         int selectedMeasure = 0;
+        
 
         while (port.IsOpen) 
         {
             float.TryParse(port.ReadLine(), out measurements[selectedMeasure]);
 
             percentage = (measurements[0] + measurements[1] + measurements[2] + measurements[3] + measurements[4]) / 5;
-            for (int i = 0; i < 4; i++)
-            {
-                if (measurements[i] < percentage - 5 || measurements[i] > percentage + 5)
-                {
-                    measurements[i] = percentage;
-                    percentage = (measurements[0] + measurements[1] + measurements[2] + measurements[3] + measurements[4]) / 5;
-                }
-            }
-
-            if (percentage > selectedBeverage.Ingredientes[0].Proportion)
+            //for (int i = 0; i < 4; i++)
+            //{
+            //    if (measurements[i] < percentage - 5 || measurements[i] > percentage + 5)
+            //    {
+            //        measurements[i] = percentage;
+            //        percentage = (measurements[0] + measurements[1] + measurements[2] + measurements[3] + measurements[4]) / 5;
+            //    }
+            //}
+            
+            
+            if (percentage > selectedBeverage.Ingredientes[0].Proportion && iteration > 200)
             {
                 if(!isIngredient1Served)
                     await JSRuntime.InvokeVoidAsync("Vibrate");
                 isIngredient1Served = true;
             }
 
-            if (percentage > selectedBeverage.Ingredientes[0].Proportion + selectedBeverage.Ingredientes[1].Proportion)
+            if (percentage > selectedBeverage.Ingredientes[0].Proportion + selectedBeverage.Ingredientes[1].Proportion && iteration > 200)
             {
                 if (!isIngredient2Served)
                     await JSRuntime.InvokeVoidAsync("Vibrate");
@@ -159,9 +161,10 @@ public partial class Index : ComponentBase
                 currentStep = Step.Finished;
                 break;
             }
-
+            
             selectedMeasure = selectedMeasure >= 4 ? 0 : selectedMeasure + 1;
 
+            iteration++;
             await Task.Delay(1);
             StateHasChanged();
         }
